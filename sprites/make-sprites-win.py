@@ -2,7 +2,8 @@
 
 #This exists mainly to work around the (many) problems with doing (simple) CLI things on windows. Like lack of shell globbing.
 
-name = "the-planet"
+name2 = "trade-font"
+name = "supermarket"
 gimp = "C:\\Program Files\\GIMP 2\\bin\\gimp-console-2.10.exe"
 
 import subprocess
@@ -21,10 +22,19 @@ if os.path.exists(name):
 subprocess.run([
 	"python",
 	"extract-sprites.py",
-	name + ".list",
+	name	+ ".list",
 	name,
 	"--gimp", gimp
 ], check=True)
+	
+subprocess.run([
+	"python",
+	"extract-sprites.py",
+	name2 + ".list",
+	name,
+	"--gimp", gimp
+], check=True)
+
 
 pngs = []
 for root, dirs, files in os.walk(name):
@@ -34,6 +44,7 @@ for root, dirs, files in os.walk(name):
 	break
 
 print(pngs)
+
 
 subprocess.run([
 	"pack-sprites.exe",

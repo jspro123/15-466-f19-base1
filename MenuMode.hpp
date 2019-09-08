@@ -9,6 +9,7 @@
 #include <vector>
 #include <functional>
 
+
 struct MenuMode : Mode {
 	struct Item;
 	MenuMode(std::vector< Item > const &items);
@@ -25,15 +26,20 @@ struct MenuMode : Mode {
 	struct Item {
 		Item(
 			std::string const &name_,
-			Sprite const *sprite_ = nullptr,
+			Sprite *sprite_ = nullptr,
 			float scale_ = 1.0f,
+			int current_chr_ = 0, 
+			float wait_to_print_ = 0.0f,
 			std::function< void(Item const &) > const &on_select_ = nullptr,
 			glm::vec2 const &at_ = glm::vec2(0.0f)
-			) : name(name_), sprite(sprite_), scale(scale_), on_select(on_select_), at(at_) {
+			) : name(name_), sprite(sprite_), scale(scale_), current_chr(current_chr_), 
+				wait_to_print(wait_to_print_), on_select(on_select_), at(at_) {
 		}
 		std::string name;
 		Sprite const *sprite; //sprite drawn for item
 		float scale; //scale for sprite
+		int current_chr; //Used when drawing slowly. -1 if done
+		float wait_to_print; //Number of seconds to wait before printing
 		std::function< void(Item const &) > on_select; //if set, item is selectable
 		glm::vec2 at; //location to draw item
 	};
@@ -47,7 +53,7 @@ struct MenuMode : Mode {
 	SpriteAtlas const *atlas = nullptr;
 
 	//currently selected item:
-	uint32_t selected = 0;
+	uint32_t selected = -1;
 
 	//area to display; by default, menu lays items out in the [-1,1]^2 box:
 	glm::uvec2 view_min = glm::vec2(-1.0f, -1.0f);

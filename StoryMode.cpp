@@ -7,80 +7,26 @@
 #include "gl_errors.hpp"
 #include "MenuMode.hpp"
 
+
+
+Sprite const* supermarket_left = nullptr;
+Sprite const* supermarket_front = nullptr;
+Sprite const* supermarket_top = nullptr;
+Sprite const* supermarket_color = nullptr;
+Sprite const* supermarket_sign = nullptr;
+
+
 Sprite const *sprite_left_select = nullptr;
 Sprite const *sprite_right_select = nullptr;
 
-Sprite const *sprite_dunes_bg = nullptr;
-Sprite const *sprite_dunes_traveller = nullptr;
-Sprite const *sprite_dunes_ship = nullptr;
-
-Sprite const *sprite_oasis_bg = nullptr;
-Sprite const *sprite_oasis_traveller = nullptr;
-Sprite const *sprite_oasis_missing = nullptr;
-
-Sprite const *sprite_hill_bg = nullptr;
-Sprite const *sprite_hill_traveller = nullptr;
-Sprite const *sprite_hill_missing = nullptr;
-
-Sprite const *text_dunes_landing = nullptr;
-Sprite const *text_dunes_return = nullptr;
-Sprite const *text_dunes_wont_leave = nullptr;
-Sprite const *text_dunes_do_leave = nullptr;
-Sprite const *text_dunes_do_walk_east = nullptr;
-Sprite const *text_dunes_do_walk_west = nullptr;
-
-Sprite const *text_oasis_intro = nullptr;
-Sprite const *text_oasis_stone = nullptr;
-Sprite const *text_oasis_plain = nullptr;
-Sprite const *text_oasis_stone_taken = nullptr;
-Sprite const *text_oasis_do_take_stone = nullptr;
-Sprite const *text_oasis_do_return = nullptr;
-
-Sprite const *text_hill_intro = nullptr;
-Sprite const *text_hill_inactive = nullptr;
-Sprite const *text_hill_active = nullptr;
-Sprite const *text_hill_stone_added = nullptr;
-Sprite const *text_hill_do_add_stone = nullptr;
-Sprite const *text_hill_do_return = nullptr;
-
 Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
-	SpriteAtlas const *ret = new SpriteAtlas(data_path("the-planet"));
+	SpriteAtlas const *ret = new SpriteAtlas(data_path("supermarket"));
 
-	sprite_left_select = &ret->lookup("text-select-left");
-	sprite_right_select = &ret->lookup("text-select-right");
-
-	sprite_dunes_bg = &ret->lookup("dunes-bg");
-	sprite_dunes_traveller = &ret->lookup("dunes-traveller");
-	sprite_dunes_ship = &ret->lookup("dunes-ship");
-
-	sprite_oasis_bg = &ret->lookup("oasis-bg");
-	sprite_oasis_traveller = &ret->lookup("oasis-traveller");
-	sprite_oasis_missing = &ret->lookup("oasis-missing");
-
-	sprite_hill_bg = &ret->lookup("hill-bg");
-	sprite_hill_traveller = &ret->lookup("hill-traveller");
-	sprite_hill_missing = &ret->lookup("hill-missing");
-
-	text_dunes_landing = &ret->lookup("dunes-text-landing");
-	text_dunes_return = &ret->lookup("dunes-text-return");
-	text_dunes_wont_leave = &ret->lookup("dunes-text-won't-leave");
-	text_dunes_do_leave = &ret->lookup("dunes-text-do-leave");
-	text_dunes_do_walk_east = &ret->lookup("dunes-text-do-walk-east");
-	text_dunes_do_walk_west = &ret->lookup("dunes-text-do-walk-west");
-
-	text_oasis_intro = &ret->lookup("oasis-text-intro");
-	text_oasis_stone = &ret->lookup("oasis-text-stone");
-	text_oasis_plain = &ret->lookup("oasis-text-plain");
-	text_oasis_stone_taken = &ret->lookup("oasis-text-stone-taken");
-	text_oasis_do_take_stone = &ret->lookup("oasis-text-do-take-stone");
-	text_oasis_do_return = &ret->lookup("oasis-text-do-return");
-
-	text_hill_intro = &ret->lookup("hill-text-intro");
-	text_hill_inactive = &ret->lookup("hill-text-inactive");
-	text_hill_active = &ret->lookup("hill-text-active");
-	text_hill_stone_added = &ret->lookup("hill-text-stone-added");
-	text_hill_do_add_stone = &ret->lookup("hill-text-do-add-stone");
-	text_hill_do_return = &ret->lookup("hill-text-do-return");
+	supermarket_left = &ret->lookup("supermarket-left");
+	supermarket_front = &ret->lookup("supermarket-front");
+	supermarket_top = &ret->lookup("supermarket-top");
+	supermarket_color = &ret->lookup("supermarket-color");
+	supermarket_sign = &ret->lookup("supermarket-sign");
 
 	return ret;
 });
@@ -91,8 +37,10 @@ StoryMode::StoryMode() {
 StoryMode::~StoryMode() {
 }
 
-bool StoryMode::handle_event(SDL_Event const &, glm::uvec2 const &window_size) {
-	if (Mode::current.get() != this) return false;
+bool StoryMode::handle_event(SDL_Event const &evt, glm::uvec2 const &window_size) {
+	if (Mode::current.get()) {
+		return false;
+	}
 
 	return false;
 }
@@ -107,105 +55,481 @@ void StoryMode::update(float elapsed) {
 void StoryMode::enter_scene() {
 	//just entered this scene, adjust flags and build menu as appropriate:
 	std::vector< MenuMode::Item > items;
-	glm::vec2 at(3.0f, view_max.y - 3.0f);
-	auto add_text = [&items,&at](Sprite const *text) {
-		assert(text);
-		items.emplace_back("TEST TEXT", nullptr, 1.0f, nullptr, at);
-		at.y -= text->max_px.y - text->min_px.y;
-		at.y -= 4.0f;
+	glm::vec2 at(10.0f, view_max.y - 50.0f);
+
+
+	//Returns the number of lines that sentence will need
+	auto get_number_sentences = [](std::string const& sentence) {
+		Sprite const* chr;
+		float combined_width = 0.0;
+		for (size_t pos = 0; pos < sentence.size(); pos++) {
+			chr = &sprites->lookup(sentence.substr(pos, 1));
+			combined_width += (chr->max_px.x - chr->min_px.x) * FONT_SIZE;
+		}
+
+		return ceil(combined_width / 1000.0f);
 	};
-	auto add_choice = [&items,&at](Sprite const *text, std::function< void(MenuMode::Item const &) > const &fn) {
-		assert(text);
-		items.emplace_back("TEST CHOICE", nullptr, 1.0f, fn, at + glm::vec2(8.0f, 0.0f));
-		at.y -= text->max_px.y - text->min_px.y;
+
+	auto add_text = [&items,&at,&get_number_sentences](Sentence sentence) {
+		items.emplace_back(sentence.text, nullptr, FONT_SIZE, 0, 
+						  sentence.wait_to_print, nullptr, at);
+		at.y -= LINE_SKIP * get_number_sentences(sentence.text) * FONT_SIZE;
+		at.y -= LINE_SKIP * FONT_SIZE;
+	};
+
+	//Makes the text instantly appear on the screen (no "typing" illusion)
+	auto add_text_quick = [&items, &at, &get_number_sentences](Sentence sentence) {
+		items.emplace_back(sentence.text, nullptr, FONT_SIZE, -1, -1.0f, nullptr, at);
+		at.y -= LINE_SKIP * get_number_sentences(sentence.text) * FONT_SIZE;
+		at.y -= LINE_SKIP * FONT_SIZE;
+	};
+
+	auto add_choice = [&items,&at,&get_number_sentences](Sentence sentence, std::function< void(MenuMode::Item const &) > const &fn) {
+		items.emplace_back(sentence.text, nullptr, FONT_SIZE, 0, sentence.wait_to_print, 
+						  fn, at + glm::vec2(INDENT * FONT_SIZE, 0.0f));
+
+		at.y -= LINE_SKIP * get_number_sentences(sentence.text) * FONT_SIZE;
 		at.y -= 4.0f;
 	};
 
-	if (location == Dunes) {
-		if (dunes.wont_leave) {
-			dunes.wont_leave = false;
-			add_text(text_dunes_wont_leave);
-		}
-		if (dunes.first_visit) {
-			dunes.first_visit = false;
-			add_text(text_dunes_landing);
-		} else {
-			add_text(text_dunes_return);
-		}
-		at.y -= 8.0f; //gap before choices
-		add_choice(text_dunes_do_walk_west, [this](MenuMode::Item const &){
-			location = Hill;
+	auto skip_lines= [&at]() {
+		at.y -= LINE_SKIP * FONT_SIZE;
+	};
+
+	//The "automata". Controls everything about the game state.
+
+	if (states == Opening) {
+		add_text(opening_text_1);
+		add_text(opening_text_2);
+
+		skip_lines();
+
+		add_choice(return_key, [this](MenuMode::Item const&) {
+			states = Apartment;
 			Mode::current = shared_from_this();
-		});
-		add_choice(text_dunes_do_walk_east, [this](MenuMode::Item const &){
-			location = Oasis;
-			Mode::current = shared_from_this();
-		});
-		if (!dunes.first_visit) {
-			add_choice(text_dunes_do_leave, [this](MenuMode::Item const &){
-				if (added_stone) {
-					//TODO: some sort of victory animation?
-					Mode::current = nullptr;
-				} else {
-					dunes.wont_leave = true;
-					Mode::current = shared_from_this();
-				}
 			});
+	} else if (states == Apartment) {
+		if (apartment_search.failed_search == true) {
+			add_text(apartment_intro_search_failure);
 		}
-	} else if (location == Oasis) {
-		if (oasis.took_stone) {
-			oasis.took_stone = false;
-			add_text(text_oasis_stone_taken);
+		else if (apartment_search.searched_bed == true) {
+			add_text(apartment_intro_choice_search_bed_1);
 		}
-		if (oasis.first_visit) {
-			oasis.first_visit = false;
-			add_text(text_oasis_intro);
-		} else {
-			add_text(text_oasis_plain);
+		else if (apartment_search.searched_desk == true) {
+			add_text(apartment_intro_choice_search_desk_1);
 		}
-		if (!have_stone) {
-			add_text(text_oasis_stone);
+
+		if (apartment_search.first_choice == true) {
+			add_text(apartment_intro);
+		} else if(apartment_search.first_choice == false) {
+			add_text(apartment_intro_abridged);
 		}
-		at.y -= 8.0f; //gap before choices
-		if (!have_stone) {
-			add_choice(text_oasis_do_take_stone, [this](MenuMode::Item const &){
-				have_stone = true;
-				oasis.took_stone = true;
+
+		skip_lines();
+
+		add_choice(apartment_intro_choice_1, [this](MenuMode::Item const&) {
+
+			if (apartment_search.first_choice == true) {
+				apartment_search.first_choice = false;
+				apartment_search.searched_bed = true;
+				apartment_search.failed_search = false;
+			}
+			else if (apartment_search.searched_bed == true) {
+				apartment_search.failed_search = true;
+			}
+			else if (apartment_search.searched_bed == false) {
+				states = LeavingApartment;
+				apartment_search.found_in_bed = true;
+			}
+			Mode::current = shared_from_this();
+			});
+
+		skip_lines();
+
+		add_choice(apartment_intro_choice_2, [this](MenuMode::Item const&) {
+
+			if (apartment_search.first_choice == true) {
+				apartment_search.first_choice = false;
+				apartment_search.searched_desk = true;
+				apartment_search.failed_search = false;
+			}
+			else if (apartment_search.searched_desk == true) {
+				apartment_search.failed_search = true;
+			}
+			else if (apartment_search.searched_desk == false) {
+				states = LeavingApartment;
+				apartment_search.found_in_bed = false;
+			}
+			Mode::current = shared_from_this();
+			});
+
+	} else if (states == LeavingApartment) {
+		if (apartment_leave.first_choice && apartment_search.found_in_bed == true) {
+			add_text(apartment_intro_choice_search_bed_2);
+			add_text(apartment_reading_list);
+		}
+		else if (apartment_leave.first_choice && apartment_search.found_in_bed == false) {
+			add_text(apartment_intro_choice_search_desk_2);
+			add_text(apartment_reading_list);
+		}
+
+		if (apartment_leave.tried_shower == true) {
+			apartment_leave.tried_shower = false;
+			add_text(apartment_reading_list_shower_1);
+		}
+		else if (apartment_leave.clean_clothes == true &&
+			apartment_leave.remove_clothes_choice == false) {
+			apartment_leave.remove_clothes_choice = true;
+			add_text(apartment_reading_list_change_1);
+		}
+		else if (apartment_leave.tried_leave == true) {
+			apartment_leave.tried_leave = false;
+			switch (apartment_leave.leave_dirty) {
+			case 1:
+				add_text(apartment_reading_list_leave_No1);
+				break;
+			case 2:
+				add_text(apartment_reading_list_leave_No2);
+				break;
+			case 3:
+				add_text(apartment_reading_list_leave_No3);
+				break;
+			case 4:
+				add_text(apartment_reading_list_leave_No4);
+				break;
+			case 5:
+				add_text(apartment_reading_list_leave_No5);
+				break;
+			case 6:
+				add_text(apartment_reading_list_leave_No6);
+				break;
+			}
+
+			apartment_leave.leave_dirty++;
+		}
+
+		if (!apartment_leave.first_choice) {
+			add_text(apartment_reading_list_abridged);
+		}
+
+		if (apartment_leave.remove_clothes_choice == false) {
+			skip_lines();
+			add_choice(apartment_reading_list_choice_1, [this](MenuMode::Item const&) {
+				apartment_leave.first_choice = false;
+				apartment_leave.clean_clothes = true;
 				Mode::current = shared_from_this();
-			});
+				});
 		}
-		add_choice(text_oasis_do_return, [this](MenuMode::Item const &){
-			location = Dunes;
+
+		skip_lines();
+
+		add_choice(apartment_reading_list_choice_2, [this](MenuMode::Item const&) {
+			apartment_leave.first_choice = false;
+			apartment_leave.tried_shower = true;
 			Mode::current = shared_from_this();
-		});
-	} else if (location == Hill) {
-		if (hill.added_stone) {
-			hill.added_stone = false;
-			add_text(text_hill_stone_added);
+			});
+
+		skip_lines();
+
+		add_choice(apartment_reading_list_choice_3, [this](MenuMode::Item const&) {
+			apartment_leave.first_choice = false;
+			if (apartment_leave.clean_clothes == true || apartment_leave.leave_dirty == 7) {
+				states = CrowdStreet;
+			}
+			apartment_leave.tried_leave = true;
+			Mode::current = shared_from_this();
+			});
+
+	}
+	else if (states == CrowdStreet) {
+		if (crowded_street.first_choice && apartment_leave.clean_clothes) {
+			add_text(apartment_reading_list_leave_yes);
+			add_text(street_crowded_intro);
 		}
-		if (hill.first_visit) {
-			hill.first_visit = false;
-			add_text(text_hill_intro);
+		else if (crowded_street.first_choice && !apartment_leave.clean_clothes) {
+			add_text(apartment_reading_list_leave_No7);
+			add_text(street_crowded_intro);
+		}
+
+		if (crowded_street.approach_crowd == true) {
+			crowded_street.approach_crowd = false;
+			switch (crowded_street.approach_number) {
+			case 1:
+				add_text(street_crowded_approach_1);
+				break;
+			case 2:
+				add_text(street_crowded_approach_2);
+				break;
+			}
+			crowded_street.approach_number++;
+		}
+
+		if (!crowded_street.first_choice) {
+			add_text(street_crowded_intro_abridged);
+		}
+		
+		skip_lines();
+
+		add_choice(street_crowded_choice_1, [this](MenuMode::Item const&) {
+			crowded_street.first_choice = false;
+			if (crowded_street.approach_number == 3) {
+				states = WalkOrApproach;
+			}
+			crowded_street.approach_crowd = true;
+			Mode::current = shared_from_this();
+			});
+
+		skip_lines();
+
+		add_choice(street_crowded_choice_2, [this](MenuMode::Item const&) {
+			crowded_street.first_choice = false;
+			states = WalkOrApproach;
+			crowded_street.continue_walking = true;
+			Mode::current = shared_from_this();
+			});
+		
+	} else if (states == WalkOrApproach) {
+		if (crowded_street.continue_walking) {
+			states = Supermarket;
+			add_text(street_crowded_walk_1);
+		} else if (crowded_street.approach_crowd && apartment_leave.clean_clothes) {
+			add_text(street_crowded_approach_3);
+			states = Supermarket;
+			add_text(street_crowded_approach_clean);
+		} else if (crowded_street.approach_crowd && !apartment_leave.clean_clothes) {
+			add_text(street_crowded_approach_3);
+			states = CreditsOne;
+			add_text(street_crowded_approach_dirty);
+		}
+
+		skip_lines();
+
+		add_choice(return_key, [this](MenuMode::Item const&) {
+			Mode::current = shared_from_this();
+			});
+
+	} else if (states == Supermarket) {
+		Sentence clerk_comments = apartment_leave.clean_clothes ? supermarket_clean : supermarket_dirty;
+
+		if (!supermarket.flipped_pages) {
+			if (supermarket.first_choice) {
+				add_text(supermarket_intro);
+				add_text(clerk_comments);
+				if (crowded_street.approach_crowd) {
+					add_text(supermarket_forget);
+				}
+				else {
+					skip_lines();
+					states = GoingBack;
+					add_choice(return_key, [this](MenuMode::Item const&) {
+						Mode::current = shared_from_this();
+						});
+				}
+			} else if(supermarket.attempt_number == 2){
+				add_text(supermarket_wrong_guess_1);
+				add_text(supermarket_thinking);
+			}
 		} else {
-			if (added_stone) {
-				add_text(text_hill_active);
-			} else {
-				add_text(text_hill_inactive);
+			if (supermarket.first_choice) {
+				add_text_quick(supermarket_intro);
+				add_text_quick(clerk_comments);
+				if (crowded_street.approach_crowd) {
+					add_text_quick(supermarket_forget);
+				}
+			}
+			else if (supermarket.attempt_number == 2) {
+				add_text_quick(supermarket_wrong_guess_1);
+				add_text_quick(supermarket_thinking);
 			}
 		}
-		at.y -= 8.0f; //gap before choices
-		if (have_stone && !added_stone) {
-			add_choice(text_hill_do_add_stone, [this](MenuMode::Item const &){
-				added_stone = true;
-				hill.added_stone = true;
+
+
+		if (!supermarket.next_page && crowded_street.approach_crowd) {
+			skip_lines();
+			add_choice(supermarket_correct, [this](MenuMode::Item const&) {
+				states = LeavingSupermarket;
+				supermarket.got_matches = true;
 				Mode::current = shared_from_this();
-			});
+				});
+			skip_lines();
+			add_choice(supermarket_bad_1, [this](MenuMode::Item const&) {
+				if (supermarket.attempt_number == 2) {
+					states = LeavingSupermarket;
+				}
+				supermarket.first_choice = false;
+				supermarket.attempt_number = 2;
+				supermarket.flipped_pages = false;
+				Mode::current = shared_from_this();
+				});
+			skip_lines();
+			add_choice(supermarket_bad_2, [this](MenuMode::Item const&) {
+				if (supermarket.attempt_number == 2) {
+					states = LeavingSupermarket;
+				}
+				supermarket.first_choice = false;
+				supermarket.attempt_number = 2;
+				supermarket.flipped_pages = false;
+				Mode::current = shared_from_this();
+				});
+			skip_lines();
+			add_choice(supermarket_next, [this](MenuMode::Item const&) {
+				supermarket.flipped_pages = true;
+				supermarket.next_page = true;
+				Mode::current = shared_from_this();
+				});
+		} else if(supermarket.next_page && crowded_street.approach_crowd){
+			skip_lines();
+			add_choice(supermarket_bad_3, [this](MenuMode::Item const&) {
+				if (supermarket.attempt_number == 2) {
+					states = LeavingSupermarket;
+				}
+				supermarket.first_choice = false;
+				supermarket.attempt_number = 2;
+				supermarket.flipped_pages = false;
+				Mode::current = shared_from_this();
+				});
+			skip_lines();
+			add_choice(supermarket_bad_4, [this](MenuMode::Item const&) {
+				if (supermarket.attempt_number == 2) {
+					states = LeavingSupermarket;
+				}
+				supermarket.first_choice = false;
+				supermarket.attempt_number = 2;
+				supermarket.flipped_pages = false;
+				Mode::current = shared_from_this();
+				});
+			skip_lines();
+			add_choice(supermarket_bad_5, [this](MenuMode::Item const&) {
+				if (supermarket.attempt_number == 2) {
+					states = LeavingSupermarket;
+				}
+				supermarket.first_choice = false;
+				supermarket.attempt_number = 2;
+				supermarket.flipped_pages = false;
+				Mode::current = shared_from_this();
+				});
+			skip_lines();
+			add_choice(supermarket_previous, [this](MenuMode::Item const&) {
+				supermarket.flipped_pages = true;
+				supermarket.next_page = false;
+				Mode::current = shared_from_this();
+				});
 		}
-		add_choice(text_hill_do_return, [this](MenuMode::Item const &){
-			location = Dunes;
+
+	} else if (states == LeavingSupermarket) {
+		if (supermarket.got_matches) {
+			add_text(supermarket_right_guess);
+		}
+		else {
+			add_text(supermarket_wrong_guess_2);
+		}
+		states = GoingBack;
+		add_choice(return_key, [this](MenuMode::Item const&) {
 			Mode::current = shared_from_this();
+			});
+
+	} else if (states == GoingBack) {
+		if (!crowded_street.approach_crowd) {
+			states = EndingTwo;
+			add_text(street_ignored_crowd);
+			add_choice(return_key, [this](MenuMode::Item const&) {
+				Mode::current = shared_from_this();
+				});
+		}
+		
+		if (empty_street.tried_supermarket) {
+			empty_street.tried_supermarket = false;
+			add_text(street_choice_walk_supermarket_1);
+		} else if (empty_street.tried_examine) {
+			empty_street.tried_examine = false;
+			if (!empty_street.examined_post_no_matches) {
+				add_text(street_examine_1);
+				empty_street.examined_post_no_matches = true;
+			} else {
+				add_text(street_examine_2);
+			}
+		}
+
+		if (empty_street.first_choice && crowded_street.approach_crowd) {
+			add_text(street_approached_crowd);
+		} else if (!empty_street.first_choice && crowded_street.approach_crowd){
+			add_text(street_approached_crowd_abridged);
+		}
+
+		if (crowded_street.approach_crowd) {
+			skip_lines();
+			add_choice(street_choice_1, [this](MenuMode::Item const&) {
+				empty_street.first_choice = false;
+				states = LeavingStreet;
+				Mode::current = shared_from_this();
+				});
+			skip_lines();
+			add_choice(street_choice_2, [this](MenuMode::Item const&) {
+				empty_street.first_choice = false;
+				if (supermarket.got_matches && empty_street.examined_post_no_matches) {
+					states = LeavingStreet;
+					empty_street.examined_post_matches = true;
+				}
+				empty_street.tried_examine = true;
+				Mode::current = shared_from_this();
+				});
+			skip_lines();
+			add_choice(street_choice_3, [this](MenuMode::Item const&) {
+				empty_street.first_choice = false;
+				empty_street.tried_supermarket = true;
+				Mode::current = shared_from_this();
+				});
+		}
+
+	} else if (states == LeavingStreet) {
+		if (!empty_street.examined_post_matches) {
+			states = EndingTwo;
+			add_text(street_walk_home_1);
+		} else {
+			states = EndingThree;
+			add_text(street_examine_match);
+		}
+
+		skip_lines();
+		add_choice(return_key, [this](MenuMode::Item const&) {
+			Mode::current = shared_from_this();
+			});
+
+	} else if (states == EndingTwo) {
+		add_text(ending_two_1);
+		add_text(ending_two_2);
+		states = CreditsTwo;
+		add_choice(return_key, [this](MenuMode::Item const&) {
+			Mode::current = shared_from_this();
+			});
+
+	} else if (states == EndingThree) {
+		add_text(ending_three_1);
+		add_text(ending_three_2);
+		states = CreditsThree;
+		add_choice(return_key, [this](MenuMode::Item const&) {
+			Mode::current = shared_from_this();
+			});
+	} else if (states == CreditsOne) {
+		add_text(credits_one);
+		add_choice(exit_key, [this](MenuMode::Item const&) {
+			exit(0);
+			Mode::current = shared_from_this();
+			});
+	} else if (states == CreditsTwo) {
+		add_text(credits_two);
+		add_choice(exit_key, [this](MenuMode::Item const&) {
+		exit(0);
+		Mode::current = shared_from_this();
+		});
+	} else if (states == CreditsThree) {
+		add_text(credits_three);
+		add_choice(exit_key, [this](MenuMode::Item const&) {
+		exit(0);
+		Mode::current = shared_from_this();
 		});
 	}
+
 	std::shared_ptr< MenuMode > menu = std::make_shared< MenuMode >(items);
 	menu->atlas = sprites;
 	menu->left_select = sprite_left_select;
@@ -230,24 +554,11 @@ void StoryMode::draw(glm::uvec2 const &drawable_size) {
 	{ //use a DrawSprites to do the drawing:
 		DrawSprites draw(*sprites, view_min, view_max, drawable_size, DrawSprites::AlignPixelPerfect);
 		glm::vec2 ul = glm::vec2(view_min.x, view_max.y);
-		if (location == Dunes) {
-			draw.draw(*sprite_dunes_bg, ul);
-			draw.draw(*sprite_dunes_ship, ul);
-			draw.draw(*sprite_dunes_traveller, ul);
-		} else if (location == Oasis) {
-			draw.draw(*sprite_oasis_bg, ul);
-			if (!have_stone) {
-				draw.draw(*sprite_oasis_missing, ul);
-			}
-			draw.draw(*sprite_oasis_traveller, ul);
-
-		} else if (location == Hill) {
-			draw.draw(*sprite_hill_bg, ul);
-			if (added_stone) {
-				draw.draw(*sprite_hill_missing, ul);
-			}
-			draw.draw(*sprite_hill_traveller, ul);
-		}
+		draw.draw(*supermarket_color, ul);
+		draw.draw(*supermarket_top, ul);
+		draw.draw(*supermarket_left, ul);
+		draw.draw(*supermarket_front, ul);
+		draw.draw(*supermarket_sign, ul);
 	}
 	GL_ERRORS(); //did the DrawSprites do something wrong?
 }

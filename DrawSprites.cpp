@@ -119,34 +119,60 @@ DrawSprites::DrawSprites(
 	//DEBUG: std::cout << glm::to_string(to_clip) << std::endl;
 }
 
-void DrawSprites::draw(Sprite const &sprite, glm::vec2 const &center, float scale, glm::u8vec4 const &tint) {
+void DrawSprites::draw(Sprite const& sprite, glm::vec2& center, float scale, glm::u8vec4 const& tint) {
+
+	//Skips a line if there isn't enough space
+	if (center.x >= view_max.x - 25) {
+		center.x = 3.0;
+		center.y -= LINE_SKIP * FONT_SIZE;
+		center.y -= 4;
+	}
+
 	glm::vec2 min = center + scale * (sprite.min_px - sprite.anchor_px);
 	glm::vec2 max = center + scale * (sprite.max_px - sprite.anchor_px);
 	glm::vec2 min_tc = sprite.min_px / glm::vec2(atlas.tex_size);
 	glm::vec2 max_tc = sprite.max_px / glm::vec2(atlas.tex_size);
-
 	if (mode == AlignPixelPerfect) {
 		//TODO: nudge min/max so that pixels line just ~just so~
 	}
 
 	//you may recognize this from draw_rectangle in base0:
 	//split rectangle into two triangles:
-	attribs.emplace_back(glm::vec2(min.x,min.y), glm::vec2(min_tc.x,min_tc.y), tint);
-	attribs.emplace_back(glm::vec2(max.x,min.y), glm::vec2(max_tc.x,min_tc.y), tint);
-	attribs.emplace_back(glm::vec2(max.x,max.y), glm::vec2(max_tc.x,max_tc.y), tint);
+	attribs.emplace_back(glm::vec2(min.x, min.y), glm::vec2(min_tc.x, min_tc.y), tint);
+	attribs.emplace_back(glm::vec2(max.x, min.y), glm::vec2(max_tc.x, min_tc.y), tint);
+	attribs.emplace_back(glm::vec2(max.x, max.y), glm::vec2(max_tc.x, max_tc.y), tint);
 
-	attribs.emplace_back(glm::vec2(min.x,min.y), glm::vec2(min_tc.x,min_tc.y), tint);
-	attribs.emplace_back(glm::vec2(max.x,max.y), glm::vec2(max_tc.x,max_tc.y), tint);
-	attribs.emplace_back(glm::vec2(min.x,max.y), glm::vec2(min_tc.x,max_tc.y), tint);
+	attribs.emplace_back(glm::vec2(min.x, min.y), glm::vec2(min_tc.x, min_tc.y), tint);
+	attribs.emplace_back(glm::vec2(max.x, max.y), glm::vec2(max_tc.x, max_tc.y), tint);
+	attribs.emplace_back(glm::vec2(min.x, max.y), glm::vec2(min_tc.x, max_tc.y), tint);
 
 }
 
-void DrawSprites::draw_text(std::string const &name, glm::vec2 const &anchor, float scale, glm::u8vec4 const &color) {
+void DrawSprites::draw_text(std::string const &name, glm::vec2 const &anchor, float scale, glm::u8vec4 const &color, int& current_chr) {
 	glm::vec2 moving_anchor = anchor;
-	for (size_t pos = 0; pos < name.size(); pos++){
+	size_t boundary = 0; //The last character that should be drawn
+	int update_flag = 1;
+	size_t pos; 
+
+	if (current_chr == -1) {
+		boundary = name.size();
+		update_flag = 0;
+	} else if (current_chr + DRAWING_SPEED >= name.size()) {
+		current_chr = -1;
+		boundary = name.size();
+		update_flag = 0;
+	} else {
+		boundary = current_chr + DRAWING_SPEED;
+	}
+
+	for (pos = 0; pos < boundary; pos++){
 		Sprite const &chr = atlas.lookup(name.substr(pos,1));
 		draw(chr, moving_anchor, scale, color);
 		moving_anchor.x += (chr.max_px.x - chr.min_px.x) * scale;
+		if (update_flag == 1) {
+			current_chr += DRAWING_SPEED;
+			update_flag = 0;
+		}
 	}
 }
 
