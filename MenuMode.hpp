@@ -9,7 +9,6 @@
 #include <vector>
 #include <functional>
 
-
 struct MenuMode : Mode {
 	struct Item;
 	MenuMode(std::vector< Item > const &items);
@@ -42,6 +41,8 @@ struct MenuMode : Mode {
 		float wait_to_print; //Number of seconds to wait before printing
 		std::function< void(Item const &) > on_select; //if set, item is selectable
 		glm::vec2 at; //location to draw item
+		std::unordered_map <size_t, int> fit_list; //Used by the line wrapping to make 
+												   //sure words don't spill to the next line (ironic).
 	};
 	std::vector< Item > items;
 

@@ -55,7 +55,7 @@ void StoryMode::update(float elapsed) {
 void StoryMode::enter_scene() {
 	//just entered this scene, adjust flags and build menu as appropriate:
 	std::vector< MenuMode::Item > items;
-	glm::vec2 at(10.0f, view_max.y - 50.0f);
+	glm::vec2 at(INDENT, view_max.y - 50.0f);
 
 
 	//Returns the number of lines that sentence will need
@@ -73,6 +73,7 @@ void StoryMode::enter_scene() {
 	auto add_text = [&items,&at,&get_number_sentences](Sentence sentence) {
 		items.emplace_back(sentence.text, nullptr, FONT_SIZE, 0, 
 						  sentence.wait_to_print, nullptr, at);
+		at.x = INDENT;
 		at.y -= LINE_SKIP * get_number_sentences(sentence.text) * FONT_SIZE;
 		at.y -= LINE_SKIP * FONT_SIZE;
 	};
@@ -80,6 +81,7 @@ void StoryMode::enter_scene() {
 	//Makes the text instantly appear on the screen (no "typing" illusion)
 	auto add_text_quick = [&items, &at, &get_number_sentences](Sentence sentence) {
 		items.emplace_back(sentence.text, nullptr, FONT_SIZE, -1, -1.0f, nullptr, at);
+		at.x = INDENT;
 		at.y -= LINE_SKIP * get_number_sentences(sentence.text) * FONT_SIZE;
 		at.y -= LINE_SKIP * FONT_SIZE;
 	};
@@ -208,8 +210,10 @@ void StoryMode::enter_scene() {
 			apartment_leave.leave_dirty++;
 		}
 
-		if (!apartment_leave.first_choice) {
+		if (!apartment_leave.first_choice && !apartment_leave.clean_clothes) {
 			add_text(apartment_reading_list_abridged);
+		} else if (!apartment_leave.first_choice && apartment_leave.clean_clothes) {
+			add_text(apartment_reading_list_u_abridged);
 		}
 
 		if (apartment_leave.remove_clothes_choice == false) {

@@ -122,11 +122,6 @@ DrawSprites::DrawSprites(
 void DrawSprites::draw(Sprite const& sprite, glm::vec2& center, float scale, glm::u8vec4 const& tint) {
 
 	//Skips a line if there isn't enough space
-	if (center.x >= view_max.x - 25) {
-		center.x = 3.0;
-		center.y -= LINE_SKIP * FONT_SIZE;
-		center.y -= 4;
-	}
 
 	glm::vec2 min = center + scale * (sprite.min_px - sprite.anchor_px);
 	glm::vec2 max = center + scale * (sprite.max_px - sprite.anchor_px);
@@ -148,12 +143,45 @@ void DrawSprites::draw(Sprite const& sprite, glm::vec2& center, float scale, glm
 
 }
 
-void DrawSprites::draw_text(std::string const &name, glm::vec2 const &anchor, float scale, glm::u8vec4 const &color, int& current_chr) {
+
+void DrawSprites::draw_text(std::string const &name, glm::vec2 const &anchor, float scale, 
+							glm::u8vec4 const &color, int& current_chr, std::unordered_map <size_t, int>& fit_list) {
 	glm::vec2 moving_anchor = anchor;
 	size_t boundary = 0; //The last character that should be drawn
 	int update_flag = 1;
 	size_t pos; 
+	size_t word_end = 0;
+	std::unordered_map <size_t, int>::iterator lookup;
 
+	//Determines if a word will fit on the current line
+	auto will_fit = [&moving_anchor, &name, &word_end, &fit_list](size_t current_pos, SpriteAtlas const& atlas, glm::vec2 view_max) {
+
+		float combined_width = 0.0f;
+		size_t inital_pos = current_pos;
+		while (current_pos < name.size() &&
+			name.substr(current_pos, 1) != "." &&
+			name.substr(current_pos, 1) != "?" &&
+			name.substr(current_pos, 1) != "!" &&
+			name.substr(current_pos, 1) != "," && //There has to be an easier/cleaner way...
+			name.substr(current_pos, 1) != " " &&
+			name.substr(current_pos, 1) != "\"" &&
+			name.substr(current_pos, 1) != ";" &&
+			name.substr(current_pos, 1) != ":") {
+
+			Sprite const& chr = atlas.lookup(name.substr(current_pos, 1));
+			combined_width += (chr.max_px.x - chr.min_px.x) * FONT_SIZE;
+			current_pos += 1;
+		}
+		word_end = current_pos;
+		if (view_max.x - moving_anchor.x  - 25 >= combined_width) {
+			fit_list[inital_pos] = (int) word_end;
+			return true;
+		} 
+		fit_list[inital_pos] = ((int) word_end) * -1; //Note the negative. Implies it doesn't fit
+		return false;
+	};
+
+	//This figures out up to which character to display on the screen
 	if (current_chr == -1) {
 		boundary = name.size();
 		update_flag = 0;
@@ -166,6 +194,25 @@ void DrawSprites::draw_text(std::string const &name, glm::vec2 const &anchor, fl
 	}
 
 	for (pos = 0; pos < boundary; pos++){
+		if (pos > word_end) { //We're at a new word
+			lookup = fit_list.find(pos);
+			if (lookup == fit_list.end()) { //Haven't checked this word yet
+				if (!will_fit(pos, atlas, view_max)) {
+					moving_anchor.x = INDENT;
+					moving_anchor.y -= LINE_SKIP * FONT_SIZE;
+					moving_anchor.y -= 4;
+				}
+			} else {
+				if (lookup->second < 0) { //Doesn't fit
+					word_end = (size_t)(lookup->second * -1);
+					moving_anchor.x = INDENT;
+					moving_anchor.y -= LINE_SKIP * FONT_SIZE;
+					moving_anchor.y -= 4;
+				} else {
+					word_end = (size_t)(lookup->second);
+				}
+			}
+		}
 		Sprite const &chr = atlas.lookup(name.substr(pos,1));
 		draw(chr, moving_anchor, scale, color);
 		moving_anchor.x += (chr.max_px.x - chr.min_px.x) * scale;

@@ -28,6 +28,7 @@ struct StoryMode : Mode {
 	//called to create menu for current scene:
 	void enter_scene();
 
+	//SPOILERS BELOW (lol)
 	/* -------------- INTRODUCTION --------------*/
 
 	std::string const openingText1 = "A low, piercing ring fills the room. "
@@ -66,6 +67,7 @@ struct StoryMode : Mode {
 		"you had to empty the fridge the other day; some food would be nice. The supermarket's not far; "
 		"you start getting ready to head out. ";
 	std::string const apartmentReadingListAbridged = "Time to change and head out.";
+	std::string const apartmentReadingListUAbridged = "Time to head out.";
 	std::string const apartmentReadingListChoice1 = "Change clothes ";
 	std::string const apartmentReadingListChange1 = "You take off the filth that you were wearing and put on some clean clothes. ";
 	std::string const apartmentReadingListChoice2 = "Take a shower ";
@@ -188,6 +190,7 @@ struct StoryMode : Mode {
 
 	Sentence apartment_reading_list = Sentence(apartmentReadingList);
 	Sentence apartment_reading_list_abridged = Sentence(apartmentReadingListAbridged);
+	Sentence apartment_reading_list_u_abridged = Sentence(apartmentReadingListUAbridged);
 	Sentence apartment_reading_list_choice_1 = Sentence(apartmentReadingListChoice1);
 	Sentence apartment_reading_list_change_1 = Sentence(apartmentReadingListChange1);
 	Sentence apartment_reading_list_choice_2 = Sentence(apartmentReadingListChoice2);
