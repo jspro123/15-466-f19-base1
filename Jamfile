@@ -75,6 +75,7 @@ GAME_NAMES =
 	MenuMode
 	StoryMode
 	Sprite
+	Text
 	data_path
 	main
 	load_save_png

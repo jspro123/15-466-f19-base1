@@ -8,7 +8,6 @@
 #include "MenuMode.hpp"
 
 
-
 Sprite const* supermarket_left = nullptr;
 Sprite const* supermarket_front = nullptr;
 Sprite const* supermarket_top = nullptr;
@@ -19,14 +18,204 @@ Sprite const* supermarket_sign = nullptr;
 Sprite const *sprite_left_select = nullptr;
 Sprite const *sprite_right_select = nullptr;
 
+Sentence const* opening_text_1 = nullptr;
+Sentence const* opening_text_2 = nullptr;
+Sentence const* return_key = nullptr;
+Sentence const* exit_key = nullptr;
+
+/* -------------- FINDING THE GROCERRY LIST --------------*/
+
+Sentence const* apartment_intro = nullptr;
+Sentence const* apartment_intro_abridged = nullptr;
+Sentence const* apartment_intro_choice_1 = nullptr;
+Sentence const* apartment_intro_choice_search_bed_1 = nullptr;
+Sentence const* apartment_intro_choice_2 = nullptr;
+Sentence const* apartment_intro_choice_search_desk_1 = nullptr;
+Sentence const* apartment_intro_search_failure = nullptr;
+Sentence const* apartment_intro_choice_search_bed_2 = nullptr;
+Sentence const* apartment_intro_choice_search_desk_2 = nullptr;
+
+/* -------------- PREPARING TO LEAVE --------------*/
+
+Sentence const* apartment_reading_list = nullptr;
+Sentence const* apartment_reading_list_abridged = nullptr;
+Sentence const* apartment_reading_list_u_abridged = nullptr;
+Sentence const* apartment_reading_list_choice_1 = nullptr;
+Sentence const* apartment_reading_list_change_1 = nullptr;
+Sentence const* apartment_reading_list_choice_2 = nullptr;
+Sentence const* apartment_reading_list_shower_1 = nullptr;
+Sentence const* apartment_reading_list_choice_3 = nullptr;
+Sentence const* apartment_reading_list_leave_yes = nullptr;
+Sentence const* apartment_reading_list_leave_No1 = nullptr;
+Sentence const* apartment_reading_list_leave_No2 = nullptr;
+Sentence const* apartment_reading_list_leave_No3 = nullptr;
+Sentence const* apartment_reading_list_leave_No4 = nullptr;
+Sentence const* apartment_reading_list_leave_No5 = nullptr;
+Sentence const* apartment_reading_list_leave_No6 = nullptr;
+Sentence const* apartment_reading_list_leave_No7 = nullptr;
+
+/* -------------- CROWDED STREET --------------*/
+
+Sentence const* street_crowded_intro = nullptr;
+Sentence const* street_crowded_intro_abridged = nullptr;
+Sentence const* street_crowded_choice_1 = nullptr;
+Sentence const* street_crowded_approach_1 = nullptr;
+Sentence const* street_crowded_approach_2 = nullptr;
+Sentence const* street_crowded_approach_3 = nullptr;
+Sentence const* street_crowded_approach_dirty = nullptr;
+Sentence const* street_crowded_approach_clean = nullptr;
+Sentence const* street_crowded_choice_2 = nullptr;
+Sentence const* street_crowded_walk_1 = nullptr;
+
+/* -------------- SUPERMARKET --------------*/
+
+Sentence const* supermarket_intro = nullptr;
+Sentence const* supermarket_clean = nullptr;
+Sentence const* supermarket_dirty = nullptr;
+Sentence const* supermarket_forget = nullptr;
+Sentence const* supermarket_correct = nullptr;
+Sentence const* supermarket_bad_1 = nullptr;
+Sentence const* supermarket_bad_2 = nullptr;
+Sentence const* supermarket_bad_3 = nullptr;
+Sentence const* supermarket_bad_4 = nullptr;
+Sentence const* supermarket_bad_5 = nullptr;
+Sentence const* supermarket_next = nullptr;
+Sentence const* supermarket_previous = nullptr;
+Sentence const* supermarket_thinking = nullptr;
+Sentence const* supermarket_wrong_guess_1 = nullptr;
+Sentence const* supermarket_wrong_guess_2 = nullptr;
+Sentence const* supermarket_right_guess = nullptr;
+
+/* -------------- STREET AGAIN --------------*/
+
+Sentence const* street_ignored_crowd = nullptr;
+Sentence const* street_approached_crowd = nullptr;
+Sentence const* street_approached_crowd_abridged = nullptr;
+Sentence const* street_choice_1 = nullptr;
+Sentence const* street_walk_home_1 = nullptr;
+Sentence const* street_choice_2 = nullptr;
+Sentence const* street_examine_1 = nullptr;
+Sentence const* street_examine_2 = nullptr;
+Sentence const* street_examine_match = nullptr;
+Sentence const* street_choice_3 = nullptr;
+Sentence const* street_choice_walk_supermarket_1 = nullptr;
+
+/* -------------- BACK IN APARTMENT --------------*/
+
+
+Sentence const* ending_two_1 = nullptr;
+Sentence const* ending_two_2 = nullptr;
+Sentence const* ending_three_1 = nullptr;
+Sentence const* ending_three_2 = nullptr;
+Sentence const* credits_one = nullptr;
+Sentence const* credits_two = nullptr;
+Sentence const* credits_three = nullptr;
+
+
 Load< SpriteAtlas > sprites(LoadTagDefault, []() -> SpriteAtlas const * {
 	SpriteAtlas const *ret = new SpriteAtlas(data_path("supermarket"));
+	SentenceAtlas const *ret2 = new SentenceAtlas(data_path("supermarket-text"));
 
 	supermarket_left = &ret->lookup("supermarket-left");
 	supermarket_front = &ret->lookup("supermarket-front");
 	supermarket_top = &ret->lookup("supermarket-top");
 	supermarket_color = &ret->lookup("supermarket-color");
 	supermarket_sign = &ret->lookup("supermarket-sign");
+
+	/* -------------- INTRODUCTION --------------*/
+
+	opening_text_1 = &ret2->lookup("openingText1");
+	opening_text_2 = &ret2->lookup("openingText2");
+	return_key = &ret2->lookup("returnKey");
+	exit_key = &ret2->lookup("exitKey");
+
+	/* -------------- FINDING THE GROCERRY LIST --------------*/
+
+	apartment_intro = &ret2->lookup("apartmentIntro");
+	apartment_intro_abridged = &ret2->lookup("apartmentIntroAbridged");
+	apartment_intro_choice_1 = &ret2->lookup("apartmentIntroChoice1");
+	apartment_intro_choice_search_bed_1 = &ret2->lookup("apartmentIntroSearchBed1");
+	apartment_intro_choice_2 = &ret2->lookup("apartmentIntroChoice2");
+	apartment_intro_choice_search_desk_1 = &ret2->lookup("apartmentIntroSearchDesk1");
+	apartment_intro_search_failure = &ret2->lookup("apartmentIntroSearchFailure");
+	apartment_intro_choice_search_bed_2 = &ret2->lookup("apartmentIntroSearchBed2");
+	apartment_intro_choice_search_desk_2 = &ret2->lookup("apartmentIntroSearchDesk2");
+
+	/* -------------- PREPARING TO LEAVE --------------*/
+
+	apartment_reading_list = &ret2->lookup("apartmentReadingList");
+	apartment_reading_list_abridged = &ret2->lookup("apartmentReadingListAbridged");
+	apartment_reading_list_u_abridged = &ret2->lookup("apartmentReadingListUAbridged");
+	apartment_reading_list_choice_1 = &ret2->lookup("apartmentReadingListChoice1");
+	apartment_reading_list_change_1 = &ret2->lookup("apartmentReadingListChange1");
+	apartment_reading_list_choice_2 = &ret2->lookup("apartmentReadingListChoice2");
+	apartment_reading_list_shower_1 = &ret2->lookup("apartmentReadingListShower1");
+	apartment_reading_list_choice_3 = &ret2->lookup("apartmentReadingListChoice3");
+	apartment_reading_list_leave_yes = &ret2->lookup("apartmentReadingListLeaveYes");
+	apartment_reading_list_leave_No1 = &ret2->lookup("apartmentReadingListLeaveNo1");
+	apartment_reading_list_leave_No2 = &ret2->lookup("apartmentReadingListLeaveNo2");
+	apartment_reading_list_leave_No3 = &ret2->lookup("apartmentReadingListLeaveNo3");
+	apartment_reading_list_leave_No4 = &ret2->lookup("apartmentReadingListLeaveNo4");
+	apartment_reading_list_leave_No5 = &ret2->lookup("apartmentReadingListLeaveNo5");
+	apartment_reading_list_leave_No6 = &ret2->lookup("apartmentReadingListLeaveNo6");
+	apartment_reading_list_leave_No7 = &ret2->lookup("apartmentReadingListLeaveNo7");
+
+	/* -------------- CROWDED STREET --------------*/
+
+	street_crowded_intro = &ret2->lookup("streetCrowdedIntro");
+	street_crowded_intro_abridged = &ret2->lookup("streetCrowdedIntroAbridged");
+	street_crowded_choice_1 = &ret2->lookup("streetCrowdedChoice1");
+	street_crowded_approach_1 = &ret2->lookup("streetCrowdedApproach1");
+	street_crowded_approach_2 = &ret2->lookup("streetCrowdedApproach2");
+	street_crowded_approach_3 = &ret2->lookup("streetCrowdedApproach3");
+	street_crowded_approach_dirty = &ret2->lookup("streetCrowdedApproachDirty");
+	street_crowded_approach_clean = &ret2->lookup("streetCrowdedApproachClean");
+	street_crowded_choice_2 = &ret2->lookup("streetCrowdedChoice2");
+	street_crowded_walk_1 = &ret2->lookup("streetCrowdedWalk1");
+
+	/* -------------- SUPERMARKET --------------*/
+
+	supermarket_intro = &ret2->lookup("supermarketIntro");
+	supermarket_clean = &ret2->lookup("supermarketClean");
+	supermarket_dirty = &ret2->lookup("supermarketDirty");
+	supermarket_forget = &ret2->lookup("supermarketForget");
+	supermarket_correct = &ret2->lookup("supermarketCorrect");
+	supermarket_bad_1 = &ret2->lookup("supermarketBad1");
+	supermarket_bad_2 = &ret2->lookup("supermarketBad2");
+	supermarket_bad_3 = &ret2->lookup("supermarketBad3");
+	supermarket_bad_4 = &ret2->lookup("supermarketBad4");
+	supermarket_bad_5 = &ret2->lookup("supermarketBad5");
+	supermarket_next = &ret2->lookup("supermarketNext");
+	supermarket_previous = &ret2->lookup("supermarketPrevious");
+	supermarket_thinking = &ret2->lookup("supermarketThinking");
+	supermarket_wrong_guess_1 = &ret2->lookup("supermarketWrongGuess1");
+	supermarket_wrong_guess_2 = &ret2->lookup("supermarketWrongGuess2");
+	supermarket_right_guess = &ret2->lookup("supermarketRightGuess");
+
+	/* -------------- STREET AGAIN --------------*/
+
+	street_ignored_crowd = &ret2->lookup("streetIgnoredCrowd");
+	street_approached_crowd = &ret2->lookup("streetApproachedCrowd");
+	street_approached_crowd_abridged = &ret2->lookup("streetApproachedCrowdAbridged");
+	street_choice_1 = &ret2->lookup("streetChoice1");
+	street_walk_home_1 = &ret2->lookup("streetWalkHome1");
+	street_choice_2 = &ret2->lookup("streetChoice2");
+	street_examine_1 = &ret2->lookup("streetExamine1");
+	street_examine_2 = &ret2->lookup("streetExamine2");
+	street_examine_match = &ret2->lookup("streetExamineMatch");
+	street_choice_3 = &ret2->lookup("streetChoice3");
+	street_choice_walk_supermarket_1 = &ret2->lookup("streetWalkSupermarket1");
+
+	/* -------------- BACK IN APARTMENT --------------*/
+
+
+	ending_two_1 = &ret2->lookup("endingTwo1");
+	ending_two_2 = &ret2->lookup("endingTwo2");
+	ending_three_1 = &ret2->lookup("endingThree1");
+	ending_three_2 = &ret2->lookup("endingThree2");
+	credits_one = &ret2->lookup("creditsOne");
+	credits_two = &ret2->lookup("creditsTwo");
+	credits_three = &ret2->lookup("creditsThree");
 
 	return ret;
 });
@@ -70,27 +259,27 @@ void StoryMode::enter_scene() {
 		return ceil(combined_width / 1000.0f);
 	};
 
-	auto add_text = [&items,&at,&get_number_sentences](Sentence sentence) {
-		items.emplace_back(sentence.text, nullptr, FONT_SIZE, 0, 
-						  sentence.wait_to_print, nullptr, at);
+	auto add_text = [&items,&at,&get_number_sentences](Sentence const* sentence) {
+		items.emplace_back(sentence->text, nullptr, FONT_SIZE, 0, 
+						  sentence->wait_to_print, nullptr, at);
 		at.x = INDENT;
-		at.y -= LINE_SKIP * get_number_sentences(sentence.text) * FONT_SIZE;
+		at.y -= LINE_SKIP * get_number_sentences(sentence->text) * FONT_SIZE;
 		at.y -= LINE_SKIP * FONT_SIZE;
 	};
 
 	//Makes the text instantly appear on the screen (no "typing" illusion)
-	auto add_text_quick = [&items, &at, &get_number_sentences](Sentence sentence) {
-		items.emplace_back(sentence.text, nullptr, FONT_SIZE, -1, -1.0f, nullptr, at);
+	auto add_text_quick = [&items, &at, &get_number_sentences](Sentence const* sentence) {
+		items.emplace_back(sentence->text, nullptr, FONT_SIZE, -1, -1.0f, nullptr, at);
 		at.x = INDENT;
-		at.y -= LINE_SKIP * get_number_sentences(sentence.text) * FONT_SIZE;
+		at.y -= LINE_SKIP * get_number_sentences(sentence->text) * FONT_SIZE;
 		at.y -= LINE_SKIP * FONT_SIZE;
 	};
 
-	auto add_choice = [&items,&at,&get_number_sentences](Sentence sentence, std::function< void(MenuMode::Item const &) > const &fn) {
-		items.emplace_back(sentence.text, nullptr, FONT_SIZE, 0, sentence.wait_to_print, 
+	auto add_choice = [&items,&at,&get_number_sentences](Sentence const* sentence, std::function< void(MenuMode::Item const &) > const &fn) {
+		items.emplace_back(sentence->text, nullptr, FONT_SIZE, 0, sentence->wait_to_print, 
 						  fn, at + glm::vec2(INDENT * FONT_SIZE, 0.0f));
 
-		at.y -= LINE_SKIP * get_number_sentences(sentence.text) * FONT_SIZE;
+		at.y -= LINE_SKIP * get_number_sentences(sentence->text) * FONT_SIZE;
 		at.y -= 4.0f;
 	};
 
@@ -313,7 +502,7 @@ void StoryMode::enter_scene() {
 			});
 
 	} else if (states == Supermarket) {
-		Sentence clerk_comments = apartment_leave.clean_clothes ? supermarket_clean : supermarket_dirty;
+		Sentence const *clerk_comments = apartment_leave.clean_clothes ? supermarket_clean : supermarket_dirty;
 
 		if (!supermarket.flipped_pages) {
 			if (supermarket.first_choice) {

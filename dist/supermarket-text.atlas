@@ -1,0 +1,94 @@
+// -------------- INTRODUCTION --------------
+
+openingText1 = A low, piercing ring fills the room. The sound wakes you up, annoyed and tired. 
+openingText2 = What the - , you think as you reach for your phone, the source of your disturbance. Before you can open it, though, the sound stops and the notification vanishes. You stare blankly at the screen for a bit before turning it on. 23:30. Hm. Now's as good of a time as any. You rub your eyes and stretch before getting up. 
+returnKey = Press enter to continue . . . 
+exitKey = Press enter to exit the game . . . 
+
+// -------------- FINDING THE GROCERRY LIST --------------
+
+apartmentIntro = Your apartment's seen better days and better renters. It stands quite bare, save for a few necessities; TV, fridge, a bed, and some desks are all that's there. You're not the cleanest, either; stains are splattered all across the carpet. And the smell - was it always this bad? You look around, searching for your grocery list. 
+apartmentIntroAbridged = Where did you put it? You keep looking.
+apartmentIntroChoice1 = Check near the bed
+apartmentIntroSearchBed1 = You look all around the nightstand, but find nothing. Well, that's not entirely true - you find your wallet, carelessly thrown on the floor.
+apartmentIntroChoice2 = Check around the desk
+apartmentIntroSearchDesk1 = You look all around the desk, but find nothing. Well, that's not entirely true - you find your wallet, carelessly thrown on the floor.
+apartmentIntroSearchFailure = You find nothing else. 
+apartmentIntroSearchDesk2 = You find the paper under a paperweight and grab it.
+apartmentIntroSearchBed2 = You spot the paper near the edge of the nightstand and grab it. 
+
+// -------------- PREPARING TO LEAVE --------------
+
+apartmentReadingList = You look at the list: bleach, cheese, pasta, some meat - right, the fridge is almost empty. The supermarket's not far; you start getting ready to head out.
+apartmentReadingListAbridged = Time to change and head out.
+apartmentReadingListUAbridged = Time to head out.
+apartmentReadingListChoice1 = Change clothes 
+apartmentReadingListChange1 = You take off the filth that you were wearing and put on some clean clothes. 
+apartmentReadingListChoice2 = Take a shower 
+apartmentReadingListShower1 = The shop will close soon. You should shower later. 
+apartmentReadingListChoice3 = Walk outside
+apartmentReadingListLeaveYes = You open the door and head out. 
+apartmentReadingListLeaveNo1 = You look and smell terrible. Perhaps you should change. 
+apartmentReadingListLeaveNo2 = You'd rather not offend the senses of those around you.
+apartmentReadingListLeaveNo3 = You'd rather not . . . 
+apartmentReadingListLeaveNo4 = Maybe . . .
+apartmentReadingListLeaveNo5 = Maybe . . .
+apartmentReadingListLeaveNo6 = Maybe . . . it's for the best . . . 
+apartmentReadingListLeaveNo7 = You take a deep breath and head out. 
+
+// -------------- CROWDED STREET --------------
+
+streetCrowdedIntro = On your way there, you spot a crowd gathering around a broken lamppost in the distance. It's too dark for you to see what they're doing or hear what they're saying, but you can make out the sounds of someone crying. 
+streetCrowdedIntroAbridged = You continue watching the crowd, motionless. 
+streetCrowdedChoice1 = Approach the crowd
+streetCrowdedApproach1 = The supermarket will close soon. Wasting time here might cost you.
+streetCrowdedApproach2 = Could that crowd be - you hesitate. You would rather not know. You should continue on your way.
+streetCrowdedApproach3 = You shake your head. No, you would rather know. You start walking towards the crowd. 
+streetCrowdedApproachDirty = Almost as if sensing your intentions, the crowd disperses. Suddenly, however, you're blinded by a bright light; someone's pointed a flashlight towards you. The sounds of screams fill the air, and you feel your ribs cracking as you are suddenly tackled to the ground. Your head slams against the street, and everything goes dark. 
+streetCrowdedApproachClean = Almost as if sensing your intentions, the crowd disperses. You spot, however, the figure of the crying women, as she steps back into one of the houses. Very quickly, you're left alone on the street. You look at the lamppost where the crowd was centered, but it's too dark to see anything - and you're not willing to move any closer. You start walking back to the supermarket. 
+streetCrowdedChoice2 = Continue walking
+streetCrowdedWalk1 = You ignore the crowd and continue on your way. 
+
+// -------------- SUPERMARKET --------------
+
+supermarketIntro = You step inside. It's obvious that you've arrived just in time; the clerk is busy getting ready to close for the night. He looks up. You immediately conclude that, as expected, he's been drinking all night. 
+supermarketClean = #Hel-hel-hi the-re#, he stammers, #We're . . .# You ignore him and begin crossing out the items on your list. 
+supermarketDirty = #Hel-hel-hi the-re#, he stammers, #Nic-e shirt#. You stop, annoyed that he noticed despite his usual stupor. You look around to double-check that there are no cameras, and begin crossing out the items on your list.
+supermarketForget = As you're about to leave, though, you stop. Aren't you forgetting something? You think for a moment. Yes, you're definitely forgetting something; something that you didn't need when you wrote the list. But what . . . ?
+
+supermarketCorrect = Matches
+supermarketBad1 = Gloves
+supermarketBad2 = Screwdriver
+supermarketBad3 = Shoelaces
+supermarketBad4 = Tape
+supermarketBad5 = Jerky
+supermarketNext = Next
+supermarketPrevious = Previous
+supermarketThinking = You pause and try and to remember what it was that you needed.
+supermarketWrongGuess1 = No, that wasn't it.
+supermarketWrongGuess2 = No, that wasn't it either. Forget it, you think. Whatever it was can wait. You grab your bags and head out. 
+supermarketRightGuess = Yes, that's what you needed. You buy a box of matches along with your things and head out.
+
+// -------------- STREET AGAIN --------------
+
+streetIgnoredCrowd = As you walk back, you notice that the crowd is still there. You shrug and continue moving.
+streetApproachedCrowd = You quickly reach the street where the crowd was gathered. You see nothing of note, save for the lamppost where they were standing.
+streetApproachedCrowdAbridged = You stare at the lamppost, uncertain. 
+streetChoice1 = Continue walking home
+streetWalkHome1 = You shrug and continue on your way.
+streetChoice2 = Examine the lamppost 
+streetExamine1 = You look around hesitantly and step towards the lamppost. Now that you're up close, you think you see something stuck to it, but it's too dark to tell. 
+streetExamine2 = It's too dark to see what it is, and you're not getting any closer. 
+streetExamineMatch = You strike a match and bring it towards the lamppost.  You see a poster taped on, a girl's smiling face prominently in the center. You say nothing as you shake the matchstick and walk away. Now you know. 
+streetChoice3 = Walk back to the supermarket
+streetWalkSupermarket1 = You check the time and sigh. Too late. 
+
+// -------------- BACK IN APARTMENT --------------
+
+endingTwo1 = Phew, you think as you lock the door, glad that's done with. You set your bags next to the fridge and relax on the bed. You look around the apartment and shake your head - perhaps it could use some cleaning. Especially the carpet. 
+endingTwo2 = You stand up and get to work. 
+endingThree1 = You make sure no one followed you as you lock the door behind you. Now was not the time to be careless. You sit on the bed as you ponder your next step. You need to be thorough . . . yes that's it. Erase everything. Might as well start now. 
+endingThree2 = You pick up the bleach. You open the fridge door. The stench of death is overpowering. 
+creditsOne = Hint: Perhaps something about you caught the crowd's attention . . . 
+creditsTwo = Another day goes by . . .
+creditsThree = Inspired by Shade and 9:05.
